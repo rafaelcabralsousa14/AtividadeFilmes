@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmes</title>
+</head>
+<body onload="listar()">
+    
+    <form id="form">
+        <table>
+            <caption>Filmes</caption>
+            <thead>
+                <th>
+                    Nome
+                    <input type="text" id="nome" placeholder="Nome do filme" required>
+                </th>
+                <th>
+                    Categoria
+                    <input type="text" id="categoria" placeholder="Categoria" required>
+                </th>
+                <th>
+                    Ano Lançamento
+                    <input type="text" id="ano" placeholder="Ano de lançamento" required>
+                    <button type="button" onclick="cadastrar()" id="btnCadastrar">Cadastrar</button>
+                    <button type="button" onclick="remover()" id="btnRemover">Remover</button>
+                </th>
+            </thead>
+            <tbody id="tabela-lista-corpo"></tbody>
+        </table>
+    </form>
+
+</body>
+<script>
+    let url = 'https://5fb2aa16b6601200168f6b57.mockapi.io/api/filmes'
+    let filme = document.querySelector('#filme')
+    let filmes = [];
+
+    function listar(){
+        let xhrGet = new XMLHttpRequest();
+        xhrGet.onload = listarSucesso;
+        xhrGet.onerror = listarErro;
+        xhrGet.open('GET', url);
+        xhrGet.send();
+    }
+
+    function listarSucesso(){
+        console.log('sucesso');
+        const data = this.responseText;
+        console.log(data);
+    }
+
+    function listarErro(err){
+        console.error(err)
+    }
+    
+    function cadastrar(){
+        event.preventDefault();
+
+        let xhrPost = new XMLHttpRequest();
+        xhrPost.onload = cadastroSucesso;
+        xhrPost.onerror = cadastroErro;
+        xhrPost.open('POST', url);
+        xhrPost.setRequestHeader('content-type','application/json');
+
+        let params = {
+            nome = nome.value,
+            ano = ano.value,
+            categoria = categoria.value,
+        }
+
+        xhrPost.send(JSON.stringify(params))
+    }
+
+    function cadastroSucesso(){
+        console.log('Sucesso');
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+
+        listar();
+    }
+
+    function cadastroErro(){
+        console.log('Erro' + err);
+        console.log(this.status);
+        console.log(JSON.parse(this.responseText));
+    }
+
+    function remover(){
+        let xhrDelete = new XMLHttpRequest();
+        xhrDelete.onload = removerSucesso;
+        xhrDelete.onerror = removerErro;
+        xhrDelete.open('DELETE', url + '/' + nome.value);
+        xhrDelete.send();
+    }
+
+    function removerSucesso(){
+        console.log('Sucesso');
+
+        listar();
+    }
+    
+    function removerErro(){
+        console.log('Erro' + err);
+    }
+</script>
+</html>
